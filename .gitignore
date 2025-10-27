@@ -35,3 +35,7 @@
 # Added by cargo
 
 /target
+*.deb
+/degcolor
+/.env
+/.venv

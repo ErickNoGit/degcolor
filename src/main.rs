@@ -11,13 +11,16 @@ fn main() {
         "Its reverse color is: {}",
         Pallet.reverse(cor.clone()).to_rgb()
     );
-    println!(
-        "Her random magic color is: {}",
-        Pallet.random_magic(cor)
-    );
+    println!("Her random magic color is: {}", Pallet.random_magic(cor));
 
     let a = Pallet.random();
     let b = Pallet.random();
-    println!("Joining colors, color A {} and color B {}", a.to_rgb(), b.to_rgb());
+    println!(
+        "Joining colors, color A {} and color B {}",
+        a.to_rgb(),
+        b.to_rgb()
+    );
     println!("Resulted in the color: {}", Pallet.join(a, b).to_rgb());
+
+    println!("Format in HEX: {}", Pallet.random().to_hex())
 }
