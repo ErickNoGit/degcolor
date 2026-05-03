@@ -1,6 +1,6 @@
 [package]
 name = "degcolor"
-version = "0.1.0"
+version = "1.0.0"
 edition = "2024"
 
 [package.metadata.deb]
@@ -16,8 +16,15 @@ assets = [
     { source = "README.md", dest = "usr/share/doc/degcolor/README", mode = "644" },
 ]
 
+[profile.release]
+opt-level = 3
+lto = true
+codegen-units = 1
+strip = true
+panic = "abort"
+
 [dependencies]
-cargo-deb = "3.6.4"
+cargo-deb = "3.7.0"
 clap = { version = "4", features = ["derive"] }
 colored = "3.1.1"
 rand = "0.10.0"

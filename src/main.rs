@@ -23,13 +23,13 @@ struct Cli {
     #[arg(long)]
     hsl: bool,
 
-    /// Returns the opposite color of the input.
-    #[arg(short = 'r', long)]
-    reverse: Option<String>,
-
     /// Remove the context, use optionally.
     #[arg(long)]
     context: bool,
+
+    /// Returns the opposite color of the input.
+    #[arg(short = 'r', long)]
+    reverse: Option<String>,
 
     /// It combines two colors.
     #[arg(short = 'u', long, num_args = 2)]
@@ -38,8 +38,17 @@ struct Cli {
     /// Returns the nearest random inverse color of the input.
     #[arg(short = 'm', long)]
     magic: Option<String>,
+
+    /// Returns the complementary color of the endpoint.
+    #[arg(short = 'e', long)]
+    extreme: Option<String>,
+
+    /// Returns to the display of the color selected in the input.
+    #[arg(short = 's', long)]
+    show: Option<String>,
 }
 
+/// Conventional types of color formats for user output.
 enum FormatColor {
     Rgb,
     Hex,
@@ -47,6 +56,8 @@ enum FormatColor {
 }
 
 impl FormatColor {
+    /// The instance for selecting the user's preferred color receives
+    /// the command structure for the terminal as a parameter.
     pub fn new(cli: &Cli) -> Self {
         if cli.hex {
             Self::Hex
@@ -58,6 +69,7 @@ impl FormatColor {
     }
 }
 
+/// Ensures the standard output desired by the user.
 fn display_color(c: &Color, f: FormatColor, context: bool) {
     let formatted: String = match f {
         FormatColor::Rgb => c.to_rgb(),
@@ -130,6 +142,37 @@ fn main() {
             None => {
                 println!(
                     "Format value in command --magic invalid!
+                    Use: rgb(255, 0, 0) or #FF0000"
+                )
+            }
+        }
+    }
+
+    if let Some(input) = &cli.extreme {
+        match Color::from_str(&input) {
+            Some(c) => {
+                let color_extreme: &Color = &c.complementary();
+                let format_color: FormatColor = FormatColor::new(&cli);
+                display_color(color_extreme, format_color, cli.context);
+            }
+            None => {
+                println!(
+                    "Format value in command --extreme invalid!
+                    Use: rgb(255, 0, 0) or #FF0000"
+                )
+            }
+        }
+    }
+
+    if let Some(input) = &cli.show {
+        match Color::from_str(&input) {
+            Some(c) => {
+                let format_color: FormatColor = FormatColor::new(&cli);
+                display_color(&c, format_color, cli.context);
+            }
+            None => {
+                println!(
+                    "Format value in command --extreme invalid!
                     Use: rgb(255, 0, 0) or #FF0000"
                 )
             }

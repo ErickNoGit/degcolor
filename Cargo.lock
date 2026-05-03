@@ -87,9 +87,9 @@ checksum = "5d20789868f4b01b2f2caec9f5c4e0213b41e3e5702a50157d699ae31ced2fcb"
 
 [[package]]
 name = "cargo-deb"
-version = "3.6.4"
+version = "3.7.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "2935f81de87b20071a468eaa18d637c13d44e03b03e32ed192fafab8bc41178d"
+checksum = "a40a401a79fd1bd9d2cb41fd783d0c80f3504f657002bfae49dfd55049dce8f8"
 dependencies = [
  "anstream",
  "anstyle",
@@ -250,7 +250,7 @@ checksum = "d0a5c400df2834b80a4c3327b3aad3a4c4cd4de0629063962b03235697506a28"
 
 [[package]]
 name = "degcolor"
-version = "0.1.0"
+version = "1.0.0"
 dependencies = [
  "cargo-deb",
  "clap",
