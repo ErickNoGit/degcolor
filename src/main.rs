@@ -1,26 +1,138 @@
+use clap::Parser;
 mod color;
 use color::Color;
-mod pallet;
-use pallet::Pallet;
+use colored::{ColoredString, Colorize};
+
+#[derive(Parser)]
+#[command(name = "degcolor")]
+#[command(version, about = "A CLI to help pick colors")]
+struct Cli {
+    /// Generates a random color in RGB.
+    #[arg(short = 'c', long)]
+    color: bool,
+
+    /// Ensures RGB output format.
+    #[arg(long)]
+    rgb: bool,
+
+    /// Ensures HEX output format.
+    #[arg(long)]
+    hex: bool,
+
+    /// Ensures HSL output format.
+    #[arg(long)]
+    hsl: bool,
+
+    /// Returns the opposite color of the input.
+    #[arg(short = 'r', long)]
+    reverse: Option<String>,
+
+    /// Remove the context, use optionally.
+    #[arg(long)]
+    context: bool,
+
+    /// It combines two colors.
+    #[arg(short = 'u', long, num_args = 2)]
+    union: Option<Vec<String>>,
+
+    /// Returns the nearest random inverse color of the input.
+    #[arg(short = 'm', long)]
+    magic: Option<String>,
+}
+
+enum FormatColor {
+    Rgb,
+    Hex,
+    Hsl,
+}
+
+impl FormatColor {
+    pub fn new(cli: &Cli) -> Self {
+        if cli.hex {
+            Self::Hex
+        } else if cli.hsl {
+            Self::Hsl
+        } else {
+            Self::Rgb
+        }
+    }
+}
+
+fn display_color(c: &Color, f: FormatColor, context: bool) {
+    let formatted: String = match f {
+        FormatColor::Rgb => c.to_rgb(),
+        FormatColor::Hex => c.to_hex(),
+        FormatColor::Hsl => c.to_hsl(),
+    };
+
+    if !context {
+        let width: usize = "rgb(255, 255, 255)".len();
+        let color_block: ColoredString = "    ".on_truecolor(c.red, c.green, c.blue);
+        let padded: String = format!("{:^width$}", formatted, width = width);
+
+        println!("+----+{}+", "-".repeat(width + 2));
+        println!("|{}| {} |", color_block, padded.white());
+        println!("+----+{}+", "-".repeat(width + 2));
+    } else {
+        println!("{}", formatted);
+    }
+}
 
 fn main() {
-    let cor: Color = Pallet.random();
+    let cli: Cli = Cli::parse();
 
-    println!("The random color was: {}", cor.to_rgb());
-    println!(
-        "Its reverse color is: {}",
-        Pallet.reverse(cor.clone()).to_rgb()
-    );
-    println!("Her random magic color is: {}", Pallet.random_magic(cor));
+    if cli.color {
+        let c: Color = Color::random();
+        display_color(&c, FormatColor::new(&cli), cli.context);
+    }
 
-    let a = Pallet.random();
-    let b = Pallet.random();
-    println!(
-        "Joining colors, color A {} and color B {}",
-        a.to_rgb(),
-        b.to_rgb()
-    );
-    println!("Resulted in the color: {}", Pallet.join(a, b).to_rgb());
+    if let Some(input) = &cli.reverse {
+        match Color::from_str(input) {
+            Some(c) => {
+                let c: Color = c.reverse();
+                display_color(&c, FormatColor::new(&cli), cli.context);
+            }
+            None => println!(
+                "Format value in command --reverse invalid!
+                Use: rgb(255, 0, 0) or #FF0000"
+            ),
+        }
+    }
 
-    println!("Format in HEX: {}", Pallet.random().to_hex())
+    if let Some(colors) = &cli.union {
+        let color_one: Option<Color> = Color::from_str(&colors[0]);
+        let color_two: Option<Color> = Color::from_str(&colors[1]);
+
+        if color_one.is_some() & color_two.is_some() {
+            let color_one: Color = color_one.unwrap();
+            let color_two: Color = color_two.unwrap();
+
+            display_color(
+                &color_one.join(&color_two),
+                FormatColor::new(&cli),
+                cli.context,
+            );
+        } else {
+            println!(
+                "Format value in command --union invalid!
+                Use: --union \"#FF0000\" \"rgb(0, 0, 0)\""
+            )
+        }
+    }
+
+    if let Some(input) = &cli.magic {
+        match Color::from_str(&input) {
+            Some(c) => {
+                let color_magic: &Color = &c.random_magic();
+                let format_color: FormatColor = FormatColor::new(&cli);
+                display_color(color_magic, format_color, cli.context);
+            }
+            None => {
+                println!(
+                    "Format value in command --magic invalid!
+                    Use: rgb(255, 0, 0) or #FF0000"
+                )
+            }
+        }
+    }
 }

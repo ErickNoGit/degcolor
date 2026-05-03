@@ -3,6 +3,21 @@ name = "degcolor"
 version = "0.1.0"
 edition = "2024"
 
+[package.metadata.deb]
+maintainer = "Erick M. Alves <onemylinux@gmail.com>"
+copyright = "2024, Eick M. Alves"
+license-file = ["LICENSE", "4"]
+extended-description = "A fast-access CLI for color resources in text format, designed to help indecisive people choose the right color — or combination of colors — for any purpose."
+depends = "$auto"
+section = "utility"
+priority = "optional"
+assets = [
+    ["target/release/degcolor", "usr/bin/", "755"],
+    { source = "README.md", dest = "usr/share/doc/degcolor/README", mode = "644" },
+]
+
 [dependencies]
-clap = "=4.5.40"
-rand = "0.9.1"
+cargo-deb = "3.6.4"
+clap = { version = "4", features = ["derive"] }
+colored = "3.1.1"
+rand = "0.10.0"
