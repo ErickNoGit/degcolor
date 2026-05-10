@@ -1,11 +1,15 @@
 use clap::Parser;
-mod color;
-use color::Color;
 use colored::{ColoredString, Colorize};
+use degcolor::Color;
 
 #[derive(Parser)]
-#[command(name = "degcolor")]
-#[command(version, about = "A CLI to help pick colors")]
+#[command(
+    name = "degcolor",
+    version,
+    about = "Terminal color toolkit for Linux shells",
+    long_about = "Degcolor is a Rust-powered CLI for generating,
+    transforming, and visualizing colors directly inside the Linux terminal."
+)]
 struct Cli {
     /// Generates a random color in RGB.
     #[arg(short = 'c', long)]
@@ -28,23 +32,23 @@ struct Cli {
     context: bool,
 
     /// Returns the opposite color of the input.
-    #[arg(short = 'r', long)]
+    #[arg(short = 'r', long, value_name = "COLOR")]
     reverse: Option<String>,
 
     /// It combines two colors.
-    #[arg(short = 'u', long, num_args = 2)]
+    #[arg(short = 'u', long, num_args = 2, value_names = ["COLOR1", "COLOR2"])]
     union: Option<Vec<String>>,
 
     /// Returns the nearest random inverse color of the input.
-    #[arg(short = 'm', long)]
+    #[arg(short = 'm', long, value_name = "COLOR")]
     magic: Option<String>,
 
     /// Returns the complementary color of the endpoint.
-    #[arg(short = 'e', long)]
+    #[arg(short = 'e', long, value_name = "COLOR")]
     extreme: Option<String>,
 
     /// Returns to the display of the color selected in the input.
-    #[arg(short = 's', long)]
+    #[arg(short = 's', long, value_name = "COLOR")]
     show: Option<String>,
 }
 
@@ -78,13 +82,13 @@ fn display_color(c: &Color, f: FormatColor, context: bool) {
     };
 
     if !context {
-        let width: usize = "rgb(255, 255, 255)".len();
+        let width: usize = "hsl(360, 100%, 100%)".len();
         let color_block: ColoredString = "    ".on_truecolor(c.red, c.green, c.blue);
         let padded: String = format!("{:^width$}", formatted, width = width);
 
-        println!("+----+{}+", "-".repeat(width + 2));
-        println!("|{}| {} |", color_block, padded.white());
-        println!("+----+{}+", "-".repeat(width + 2));
+        println!("+------+{}+", "-".repeat(width + 2));
+        println!("| {} | {} |", color_block, padded.white());
+        println!("+------+{}+", "-".repeat(width + 2));
     } else {
         println!("{}", formatted);
     }

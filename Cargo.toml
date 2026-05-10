@@ -24,7 +24,6 @@ strip = true
 panic = "abort"
 
 [dependencies]
-cargo-deb = "3.7.0"
 clap = { version = "4", features = ["derive"] }
 colored = "3.1.1"
 rand = "0.10.0"
